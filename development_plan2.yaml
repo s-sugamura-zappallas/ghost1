@@ -1,0 +1,87 @@
+phases:
+  - name: "仮想環境のセットアップ"
+    steps:
+      - "【technical_specifications.md 参考: 行 1-10】Python 3.11 の利用が必須 (要件1を確認)。まずは作業ディレクトリに移動し、python3.11 がインストールされているかを確認します。例: `python3.11 --version`。"
+      - "【technical_specifications.md 参考: 行 1-10】グローバル環境への誤インストールを避けるため、必ず Python の仮想環境 (venv) を作成します。例: `python3.11 -m venv venv`"
+      - "【technical_specifications.md 参考: 行 1-10】仮想環境をアクティベートします。例: `. venv/bin/activate` (Linux/Mac) または `.\venv\Scripts\activate` (Windows)"
+      - "【technical_specifications.md 参考: 行 1-10】仮想環境のパスを確認し、再度 `python --version` を実行してPythonバージョン3.11であることを確認します。"
+      - "【technical_specifications.md 参考: 行 201-220】requirements.txtを参照し、本番環境で使用するライブラリ (fastapi, uvicorn, requests, xmltodict等) を今後の開発で使用予定。だがここではまだインストールせず、仮想環境構築のみを完了させます。"
+      - "【technical_specifications.md 参考: 行 261-280】要件通り仮想環境が必須であり、以降の作業もすべてこの仮想環境内で実行することを明記します。"
+
+  - name: "依存パッケージのインストールと環境構築"
+    steps:
+      - "【technical_specifications.md 参考: 行 19-29】仮想環境に入った状態で、`pip install --upgrade pip` を実行し、pipを最新化します。"
+      - "【technical_specifications.md 参考: 行 18,31-40】`pip install -r requirements.txt` を実行してFastAPIやrequests、xmltodictなどをインストールします。"
+      - "【technical_specifications.md 参考: 行 41-60】`app/config/development.env` や `app/config/production.env` を確認し、ロジックサーバーURLやLLMアクセスキーなどの環境変数が定義されているか念入りにチェックします。"
+      - "【technical_specifications.md 参考: 行 61-80】`app/config/settings.py` (行 10-30 付近に記載されている想定) で環境変数を読み込む動作を確認し、誤りがないかをレビューします。"
+      - "【technical_specifications.md 参考: 行 201-220】Dockerfile や cdk/requirements.txt も依存関係があるため、本フェーズでライブラリの重複・衝突がないかを確認します。"
+      - "【technical_specifications.md 参考: 行 30-40, 61-80】環境変数ファイル (development.env / production.env) を改めて正しい場所 (`app/config/`) に置き、内容がこのシステム仕様(LLM呼び出し時のエンドポイント, ロジックサーバーURLなど)に合っているかをチェックします。"
+
+  - name: "モックデータ先行作成"
+    steps:
+      - "【technical_specifications.md 参考: 行 171-200】まず占い項目生成モックデータを作成します。`app/tests/mock_fortune_items.json` というファイルを新規作成し、要件の例に沿った 6個の項目データを定義します。例: `[{\"id\": 1, \"fortune_items\": \"恋の秘訣\"}, ...]`"
+      - "【technical_specifications.md 参考: 行 171-200】次にロジックサーバーからのモックXMLを用意します。`app/tests/mock_logic_response.xml` というファイルを新規作成し、 `<uranai>...<explanation id='ghost'>4</explanation>...` のように書き込んで 6つの `<explanation>` 要素を含む構造を作成します。"
+      - "【technical_specifications.md 参考: 行 171-200】さらに、LLM 呼び出し時の応答モックを `app/tests/mock_llm_response.json` として作成し、Ghostごとに回答を含むJSONを6要素作成します。"
+      - "【technical_specifications.md 参考: 行 12-30, 171-200】モックデータを複数用意する理由: (1) LLM呼び出し結果 (2) ロジックサーバーXML (3) 閲覧データサーバーJSON (historyに対する詳細情報 例: mock_view_data.json) などをあらかじめ作成しておき、実装前にテストを行えるようにするためです。"
+      - "【technical_specifications.md 参考: 行 171-200】上記モックデータファイルをすべてリポジトリ内の `app/tests/` ディレクトリ (もしくは `app/tests/mock_data/` ディレクトリ) に配置し、誰でも同じデータでテストを再現可能なようにします。"
+      - "【technical_specifications.md 参考: 行 171-200】この段階ではあくまでテストデータの準備のみであり、各サービスファイル内はまだモックを読み込む箇所を実装していません。次フェーズで仮のロジックを組んでテストを実行できるようにします。"
+
+  - name: "モックテスト用ロジック (仮) の実装と単体テスト"
+    steps:
+      - "【technical_specifications.md 参考: 行 81-100】`app/src/services/llm_service.py` 内に、実際のLLM呼び出し処理の代わりにモックファイル(`mock_llm_response.json`)を読み込み、回答を返す仮メソッド `mock_generate_fortune_items()`, `mock_generate_ghost_answers()` などを作成します。"
+      - "【technical_specifications.md 参考: 行 81-100】`app/src/services/logic_service.py` 内で `mock_logic_response.xml` を読み込み、XMLパーサ(`xml_parser.py`)を利用してghostやtext1を取得する仮メソッド `mock_fetch_logic_data()` を作成します。"
+      - "【technical_specifications.md 参考: 行 81-100】`app/src/services/viewdata_service.py` でも `mock_view_data.json` を読み込む処理を仮に作成 (必要に応じて)。"
+      - "【technical_specifications.md 参考: 行 171-200】`app/src/services/fortune_service.py` において、LLM呼び出し箇所とlogic_service呼び出し箇所をモック用メソッドと差し替え、占い項目(6個)→ghost回答→要約生成のフローを一通り通す仮実装を行います。"
+      - "【technical_specifications.md 参考: 行 81-100, 171-200】ルーター(`app/src/routers/fortune_router.py`)にも仮ロジックを使用する設定を行い、`@router.post('/fortune')` をたたくとモックデータが返る状態にします。"
+      - "【technical_specifications.md 参考: 行 120-130】ファイルごとにテストを記述する方針に沿い、`app/tests/test_llm_service.py`, `app/tests/test_logic_service.py`, `app/tests/test_viewdata_service.py`, `app/tests/test_fortune_service.py` を順に作成し、モックを使った単体テストをShellコマンドで実行します。例: `python app/tests/test_llm_service.py`"
+      - "【technical_specifications.md 参考: 行 120-130】各テストがOKなら次に進み、NGの場合はそのテストを修正→再度コマンド実行して合格するまで繰り返します。テスト結果ログを `test_results_llm_service.log` などのファイルにリダイレクトして保存します。"
+      - "【technical_specifications.md 参考: 行 71-80, 171-200】このフェーズではまだ実際のAPI呼び出しを行わず、モック中心でテスト合格を目指すところまでが完了目標です。"
+
+  - name: "実際のロジックサーバー / LLM 接続実装"
+    steps:
+      - "【technical_specifications.md 参考: 行 2-3, 61-80】モック実装を切り替えて、本番のAWS Bedrock やロジックサーバーURLを `app/config/settings.py` (および .env ファイル) に設定します。"
+      - "【technical_specifications.md 参考: 行 41-60, 81-100】`llm_service.py` の仮メソッドを廃止し、 `requests` もしくはAWS SDK (bedrock呼び出しが可能なライブラリ) を用いた本番接続関数を実装します。LLM呼び出し時に `prompt/ghost1_prompt.txt` などを読み込み、占い項目作成時には `prompt/fortune_item_prompt.txt` を参照し、要約には `prompt/summary_prompt.txt` を使用します。"
+      - "【technical_specifications.md 参考: 行 61-80】`logic_service.py` で、ロジックサーバーのエンドポイントURLに誕生日(birth)と日付(date)をクエリパラメータとして付与して`requests.get`し、XMLを文字列で取得。`xml_parser.py` を使って `<explanation id='ghost'>` や `<explanation id='text1'>` を抽出する本番実装を行います。"
+      - "【technical_specifications.md 参考: 行 81-100】`viewdata_service.py` も同様に、本番の閲覧データサーバーJSONが必要な場合は `requests.get` で取得する処理を実装します (今回の要件例では省略可能だが、technical_specifications.md 行 6により連携が定義されているため一応実装)。"
+      - "【technical_specifications.md 参考: 行 120-130】ファイルごとに単体テストを再度実施。既存のテストコードはモックデータで書かれているため、一部実装に応じて実テストに切り替え可能な箇所は切り替えてテストします。失敗時はログを保存しつつ修正を行い、合格を目指します。"
+      - "【technical_specifications.md 参考: 行 261-280】このフェーズを終えると、モックなしでも実際にロジックサーバーからXMLを取得し、LLMに問い合わせが行える実装が完成します。"
+
+  - name: "統合テスト (モック＋本番データ環境)"
+    steps:
+      - "【technical_specifications.md 参考: 行 161-170】`app/tests/test_main.py` および `app/tests/test_fortune_router.py` に、APIエンドポイント `/fortune` を実際にリクエストする統合テストを記述します。以下のようなShellコマンドで実行: `python app/tests/test_main.py`"
+      - "【technical_specifications.md 参考: 行 161-170】統合テストでは、(1) モックを利用する設定時に 6個の占い項目・ghost回答が正しく取得できるか (2) 本番設定時に AWS Bedrock / ロジックサーバーに接続して正常なJSONが返るか、を確認します。"
+      - "【technical_specifications.md 参考: 行 81-100, 161-170】環境変数 (development.env / production.env) の切り替えにより、モックと本番を手動で切り替える方法をテストします。正しい環境変数設定で本番ロジックに繋がることを確認します。"
+      - "【technical_specifications.md 参考: 行 161-170】全テスト完了時には、 `test_results_integration.log` にまとめます。NGがあれば修正し再テストを行い、最終的に全て成功させます。"
+
+  - name: "Docker ビルドとローカル動作確認"
+    steps:
+      - "【technical_specifications.md 参考: 行 101-110, 181-190】Dockerfile(行 1-15付近) を確認し、Python3.11ベースのイメージを使用していることを再度確かめます。"
+      - "【technical_specifications.md 参考: 行 181-190】Dockerfile 中の `pip install -r requirements.txt` のパスに誤りがないか、COPY/WORKDIR 設定が正しいかチェックします。"
+      - "【technical_specifications.md 参考: 行 181-190】Dockerイメージをビルド。例: `docker build -t fortune-api:latest .`。ビルドログにエラーがなければOK。"
+      - "【technical_specifications.md 参考: 行 181-190】ローカルでコンテナを起動し、`docker run -d -p 8080:8080 --name fortune_api fortune-api:latest` のように実行。`curl http://localhost:8080/fortune -X POST -H 'Content-Type: application/json' -d '{...}'` などで実際にAPIへリクエストし、想定通りのJSONレスポンスが得られるか確認します。"
+      - "【technical_specifications.md 参考: 行 201-220】エラーがあればDockerfileやソースコードを修正→再ビルド→再度コンテナ実行→テストと繰り返します。"
+
+  - name: "AWS CDK によるデプロイ (開発環境)"
+    steps:
+      - "【technical_specifications.md 参考: 行 5, 121-130, 221-260】AWS CDK でのIaC展開。まず `cd cdk` ディレクトリに移動し、`pip install -r requirements.txt` でCDK用ライブラリ (aws-cdk-lib など) を仮想環境にインストールします。"
+      - "【technical_specifications.md 参考: 行 221-260】`pipeline_stack.py` (行 1-40付近) を開き、ソースステージ (GitHub) → ビルドステージ (CodeBuild) → デプロイステージ (App Runner) の設定を確認します。"
+      - "【technical_specifications.md 参考: 行 221-260】`app_runner_stack.py` (行 40-80付近) を確認し、ECRリポジトリやApp Runnerの設定が `development.env` を参照できるようになっているかチェックします (エンドポイント、環境変数)。"
+      - "【technical_specifications.md 参考: 行 221-260】`cdk.json` で context が正しく指定されているか、または `AppRunnerStack` と `PipelineStack` が両方CDK Appの中で呼び出される構成かどうかを確認します。"
+      - "【technical_specifications.md 参考: 行 221-260】`cdk deploy DevPipelineStack` のようなコマンドで開発環境向けのパイプラインをデプロイします。GitHubへのコミットをトリガーに開発用App Runnerサービスが構築され、イメージがデプロイされるかを確認します。"
+      - "【technical_specifications.md 参考: 行 221-260】デプロイ後、AWSコンソールのApp Runner (開発用) にアクセスし、実際にエンドポイントにPOSTリクエストを投げ、レスポンスを確認します。問題あればログを追跡し、修正→再コミット→パイプライン再実行と繰り返します。"
+
+  - name: "AWS CDK によるデプロイ (本番環境)"
+    steps:
+      - "【technical_specifications.md 参考: 行 221-260】開発環境の動作が安定したら、本番用に `production.env` を使用する設定を追加・確認します。"
+      - "【technical_specifications.md 参考: 行 221-260】CDKスタックを別途用意 (例: `ProdPipelineStack` と `ProdAppRunnerStack`) している場合は `cdk deploy ProdPipelineStack` で本番サービスを作成します。"
+      - "【technical_specifications.md 参考: 行 221-260】ビルドステージで `production.env` を読み込むように設定し、App Runner 本番サービスに対して環境変数を注入、LLMアクセス先やロジックサーバーURLも本番用に切り替わることを確認します。"
+      - "【technical_specifications.md 参考: 行 221-260】デプロイ完了後、App Runner (本番) のURLに対して `/fortune` エンドポイントを呼び出し、実際に6個の占い項目 + ghost回答 + 要約のレスポンスが返却されることを確認します。"
+      - "【technical_specifications.md 参考: 行 221-260】最終的に、リアルタイムでLLM等と連携して、本番稼働環境で正しくデータを返せる状態を完成させます。"
+      - "【technical_specifications.md 参考: 行 261-280】念のためDockerイメージ更新、環境変数変更などを行う場合は再度コミット→CodePipeline起動→本番AppRunner更新が成功するフローを確認し、運用可能であることを検証して完了とします。"
+
+  - name: "最終確認と運用開始"
+    steps:
+      - "【technical_specifications.md 参考: 行 261-280】全フェーズを通して要件に対し不足箇所がないかを洗い出します。占い項目が6つ生成されること、ghostごとに回答生成が行われ要約が付与されること、APIレスポンス形式 ( JSON配列 ) が満たされていること等、要件達成をチェックリスト化。"
+      - "【technical_specifications.md 参考: 行 261-280】実装者が逮捕されないためにも、technical_specifications.md の各項目を1つずつ確認し、抜けがないか再点検します。"
+      - "【technical_specifications.md 参考: 行 261-280】最終的に `/fortune` エンドポイントからの本番レスポンスを取得し、6要素の回答 + summary のJSONが正しく返却されることを確認。ロジックサーバー連携、LLM応答、Dockerコンテナ稼働、AWS App Runner 上でのAPI応答がすべて正常であることを確認。"
+      - "【technical_specifications.md 参考: 行 261-280】本番利用開始。以降は運用フェーズとして、何か不具合が出た場合は各ステップを再度行い修正デプロイを実施できるよう、ドキュメントと手順を常に最新化しておきます。"
