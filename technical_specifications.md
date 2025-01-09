@@ -1,5 +1,5 @@
 ```md
-# 技術要件定義書
+# technical_specifications.md
 
 ## 目的
 本システムは、AWSのApp Runner 上で FastAPI を用いた API サーバーを構築し、占いに関するデータを処理・生成・要約してフロントエンドに返却することを目的としています。  
@@ -83,7 +83,7 @@
 ├── Dockerfile                    # Docker ビルド用ファイル
 ├── requirements.txt              # FastAPI + パッケージ依存関係
 ├── README.md                     # リポジトリ説明
-└── technical_requirements.md     # 本書 (技術要件定義書)
+└── technical_requirements.md     # 本書 (technical_specifications.md)
 ```
 
 ---
@@ -304,7 +304,7 @@
 
 ### 20. `technical_requirements.md` (本書)
 - **役割**  
-  - この技術要件定義書  
+  - このtechnical_specifications.md  
 
 ---
 

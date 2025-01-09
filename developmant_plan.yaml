@@ -1,173 +1,179 @@
 phases:
-  - name: "Phase 1: 開発環境構築"
+  - name: "フェーズ1: 開発環境の準備・ディレクトリ確認"
     steps:
-      - "【Step 1-1】Python 3.11 のインストール確認 (必須)  
-         - 参照箇所: 『技術要件定義書』 > 1. Python 3.11 / FastAPI  
-         - Windows の場合: Microsoft Store や公式サイトからダウンロード  
-           - 例: https://www.python.org/downloads/  
-           - 環境変数 PATH に追加  
-         - Mac の場合: Homebrew (brew install python@3.11) など  
-         - Linux の場合: apt や yum などディストリビューションに合わせてインストール  
-         - バージョン確認: python --version で 3.11 系が正しく導入されているか確認  
-         - もし複数バージョンの Python を共存させる場合は pyenv などのバージョン管理ツール使用可"
-      - "【Step 1-2】仮想環境(venv)の作成と有効化  
-         - 参照箇所: 『技術要件定義書』 全体 (Python 関連)  
-         - プロジェクトルート(例: /app) ディレクトリで実行:  
-           1) python -m venv venv  
-           2) Windows: venv\\Scripts\\activate  
-              Mac/Linux/WSL: source venv/bin/activate  
-         - 仮想環境が有効になったら、(venv) が表示されるか確認"
-      - "【Step 1-3】依存ライブラリのインストール  
-         - 参照箇所: 『技術要件定義書』 > requirements.txt, app/src/utils/xml_parser.py, など  
-         - コマンド例: pip install -r requirements.txt  
-         - 必要ライブラリ (一例):  
-           - fastapi, uvicorn, requests, xmltodict, pytest, etc.  
-         - バージョンを固定するため、 pip freeze > requirements.txt で最新依存を再出力し管理"
-      - "【Step 1-4】Docker インストール確認  
-         - 参照箇所: 『技術要件定義書』 > 5. Docker / AWS CodePipeline / AWS App Runner / AWS CDK (Python)  
-         - docker --version, docker-compose --version でバージョン確認  
-         - Windows の場合は Docker Desktop, WSL2 連携を有効にする  
-         - Mac の場合は Docker Desktop または colima なども考慮可  
-         - Linux の場合は公式リポジトリからインストールし、sudo groupadd docker && sudo usermod -aG docker $USER なども適宜実施"
-      - "【Step 1-5】(必要に応じて) Node.js のインストール・確認  
-         - 参照箇所: 『技術要件定義書』ではフロントエンドフレームワークの記述はなし (FastAPI ベース)  
-         - フロントが不要ならスキップ可。もし将来的に Next.js 等を導入する際は node -v, npm -v を確認し nvm などでバージョン管理"
-      - "【Step 1-6】GitHub リポジトリのクローン & ディレクトリ構成確認  
-         - 参照箇所: 『技術要件定義書』 > ディレクトリ構成  
-         - git clone <REPO_URL> でソース取得  
-         - 取得後、以下のフォルダ構成を必ず確認:  
-           app/src, app/tests, app/config, prompt/, cdk/, Dockerfile, requirements.txt, etc.  
-         - technical_requirements.md が含まれているかも確認"
-      - "【Step 1-7】(test_phase1.md) テスト実行と初期動作確認  
-         - 参照箇所: 『技術要件定義書』 > 9. app/tests/  
-         - シェルコマンド例:  
-           1) pytest --maxfail=1 --disable-warnings -q  
-           2) 成功した場合は“OK”が表示される。依存欠如や設定漏れが無いか確認  
-         - 上記テストの手順や結果を test_phase1.md に記載しておく"
-  - name: "Phase 2: アプリケーション実装 (FastAPI) & ローカル動作確認"
+      - "【technical_specifications.mdの参照】まずは『## 目的』と『## ディレクトリ構成』を読み、システムの全体像を把握してください。FastAPI (Python3.11) や Docker, AWS CDK を使うことが明記されているため、事前にローカル環境に Python3.11, Docker, AWS CLI, CDK等をインストールします。"
+      - "【作業】ディレクトリが technical_specifications.md の『## ディレクトリ構成』に従って存在するか確認してください（app, prompt, cdk など）。無い場合は、指示通りにディレクトリを作成します。"
+      - "【作業】環境変数ファイル (development.env, production.env) は app/config 下にあるか確認します。存在しない場合は空ファイルとして作成し、値の詳細は後から埋める方針とします。"
+      - "【テスト方針】まだアプリ実装前のため Shell 実行によるテストは行いません。このフェーズでは構成確認のみです。"
+
+  - name: "フェーズ2: モックデータの先行作成 & テストファイル雛形準備"
     steps:
-      - "【Step 2-1】FastAPI エントリーポイント(main.py)の確認  
-         - 参照箇所: 『技術要件定義書』 > 1. app/src/main.py  
-         - main.py が FastAPI インスタンスを生成し、fortune_router を include しているか確認  
-         - ルートが /fortune でエンドポイントが待ち受け可能かなどチェック"
-      - "【Step 2-2】占いルーター (fortune_router.py) 実装  
-         - 参照箇所: 『技術要件定義書』 > 2. app/src/routers/fortune_router.py  
-         - POST /fortune で JSON を受け取り、 fortune_service へ処理委譲する仕組みを実装  
-         - request_models.py (FortuneRequest) でバリデーションを行う場合は適宜使用"
-      - "【Step 2-3】services 実装 (fortune_service.py, llm_service.py, logic_service.py, viewdata_service.py)  
-         - 参照箇所: 『技術要件定義書』 > 3, 4, 5, 6. services  
-         - fortune_service.py: 占いのメインフロー (1)閲覧データ取得→(2)占い項目生成→(3)ロジックサーバー(XML)取得→(4)LLM回答→(5)要約→(6)レスポンス  
-         - llm_service.py: prompt/*.txt を読み込んで LLM に問い合わせる  
-         - logic_service.py: ロジックサーバーから XML を取得  
-         - viewdata_service.py: 閲覧データが必要な場合に外部サーバーと連携(必要に応じて)"
-      - "【Step 2-4】utils 実装 (xml_parser.py)  
-         - 参照箇所: 『技術要件定義書』 > 7. app/src/utils/xml_parser.py  
-         - XML 文字コード (Windows-31J 等) に注意しながら、ElementTree / xmltodict でパース  
-         - ghost ID や text1 など必要な要素を取得するロジックを作成"
-      - "【Step 2-5】config/settings.py, .env ファイルによる設定  
-         - 参照箇所: 『技術要件定義書』 > 10. app/config/settings.py  
-         - development.env / production.env を用意し、API_KEY, LOGIC_SERVER_URL, など必要な環境変数を設定  
-         - Python で os.getenv() などを用いて読み込む実装を確認"
-      - "【Step 2-6】prompt/*.txt の作成  
-         - 参照箇所: 『技術要件定義書』 > 11～13. ghost1_prompt.txt, fortune_item_prompt.txt, summary_prompt.txt  
-         - ghost1～5_prompt.txt: 各 ghost ID 向けの回答を生成できるように文章を定義  
-         - fortune_item_prompt.txt: 閲覧履歴をもとに占い項目(6個)を生成するプロンプト  
-         - summary_prompt.txt: 回答(answer) を短く要約するプロンプト  
-         - llm_service.py から読み込めるようファイルパスを整合させる"
-      - "【Step 2-7】ローカルサーバー起動・動作確認  
-         - 参照箇所: 『技術要件定義書』 > 1. app/src/main.py の起動例  
-         - シェルコマンド例: uvicorn app.src.main:app --host 0.0.0.0 --port 8080 --reload  
-         - ブラウザで http://127.0.0.1:8080/docs へアクセスし、Swagger UI から /fortune にリクエスト  
-         - エラーや 404 が無いかを確認"
-      - "【Step 2-8】(test_phase2.md) ユニットテスト & 統合テスト実行  
-         - 参照箇所: 『技術要件定義書』 > 9. app/tests/ 下に test_main.py, test_fortune_router.py 等あり  
-         - コマンド例: pytest --maxfail=1 --disable-warnings -v  
-         - 主要テスト:  
-           - test_main.py: FastAPI アプリの起動テスト  
-           - test_fortune_router.py: /fortune エンドポイントの入出力確認  
-           - test_llm_service.py, test_logic_service.py: LLM や XML ロジックの単体テスト  
-         - テスト結果・考察を test_phase2.md に整理"
-  - name: "Phase 3: Docker ビルド & コンテナ動作確認"
+      - "【technical_specifications.mdの参照】『## ファイル概要と役割・処理内容・依存関係』のうち、特に『### 2. app/src/routers/fortune_router.py』, 『### 3. app/src/services/fortune_service.py』 などで使用されるデータ構造 (birth, date, history) を確認します。"
+      - "【作業】app/mock_data/ というディレクトリを新たに作成し (※仕様には記載がないがモックデータ格納用として便宜上追加)、そこに test_request.json (例) を作成し、以下のJSONを記入してください。内容は technical_specifications.md 『## 処理ロジック詳細』→『1. リクエスト受信』で示されているサンプルを流用:\
+```json\
+{\
+  \"birth\": \"19990101\",\
+  \"date\": \"20250109\",\
+  \"history\": [\
+    {\
+      \"category\": \"誕生日が分からないあの人との恋\",\
+      \"title\": \"友達だけど、少しでも異性を意識してくれてる？\"\
+    }\
+  ]\
+}\
+```"
+      - "【作業】上記データを送信するためのテストファイル雛形として test_request_command.sh を作成します。内容は以下の通り (curlコマンドでモックデータを送信する想定、実行時はサーバー起動済みを仮定):\
+```bash\
+#!/bin/bash\
+curl -X POST -H \"Content-Type: application/json\" \\
+  -d @app/mock_data/test_request.json \\
+  http://localhost:8080/fortune\
+```"
+      - "【テスト】まだAPIは未実装なのでこの段階で実行してもエラーが出ますが、ファイルの存在確認と実行権限のみチェックします。コマンド例:\
+```bash\
+chmod +x test_request_command.sh\
+./test_request_command.sh > test_results_phase2.log 2>&1 || true \
+```\
+結果は test_results_phase2.log に出力し、想定通りエラーが出ることを確認してください。"
+      - "【注意】technical_specifications.md の『### 9. app/tests/』にはpytest等の説明があるが、本計画ではShellコマンドを主体としたテストで進めるため、pytestは用いません。"
+
+  - name: "フェーズ3: ロジックサーバー連携部 (logic_service, xml_parser) の実装とテスト"
     steps:
-      - "【Step 3-1】Dockerfile の確認  
-         - 参照箇所: 『技術要件定義書』 > 18. Dockerfile  
-         - python:3.11 ベースイメージかを確認  
-         - requirements.txt をコピー → pip install -r requirements.txt → ソースコピー → CMD [\"uvicorn\", ...] の順で記述されているか確認"
-      - "【Step 3-2】Docker イメージのビルド  
-         - コマンド例: docker build -t my-fortune-app:latest .  
-         - ビルドが成功し、イメージが正しく作成されたか docker images で確認"
-      - "【Step 3-3】コンテナ起動・動作確認  
-         - コマンド例: docker run -d -p 8080:8080 --name fortune_app my-fortune-app:latest  
-         - ブラウザで http://127.0.0.1:8080/docs にアクセスし、コンテナ上で動く FastAPI の挙動を確認"
-      - "【Step 3-4】docker-compose の使用 (必要に応じて)  
-         - 参照箇所: 『技術要件定義書』 > 5. Docker … CodePipeline / App Runner  
-         - もし複数コンテナ (DB, Redis 等) と連携する場合 docker-compose.yml を用意  
-         - docker-compose up --build などで起動し、まとめてテストする"
-      - "【Step 3-5】(test_phase3.md) コンテナ上でのテスト実行  
-         - 参照箇所: 『技術要件定義書』 > 9. app/tests/  
-         - docker exec -it fortune_app pytest --maxfail=1 --disable-warnings -v などでテスト可能  
-         - test_phase3.md にテスト結果をまとめる"
-  - name: "Phase 4: CI/CD (AWS CodePipeline / AWS App Runner / AWS CDK) 構築"
+      - "【technical_specifications.mdの参照】『### 5. app/src/services/logic_service.py』, 『### 7. app/src/utils/xml_parser.py』を確認し、何を実装すべきか把握します。XML取得→パース→必要なタグを抽出する流れが書かれています。"
+      - "【作業】app/src/utils/xml_parser.py を作成します。technical_specifications.md 『### 7. app/src/utils/xml_parser.py』を参考に、標準ライブラリ(xml.etree.ElementTree) 等を用いて、<explanation id='ghost'>,<explanation id='text1'>を抽出する関数 parse_xml を定義してください。"
+      - "【テスト】まずファイル作成直後に以下コマンドを実行し、構文エラーがないかチェックします。\
+```bash\
+python -m py_compile app/src/utils/xml_parser.py || echo \"Error in xml_parser.py\"\
+```\
+出力結果を test_results_phase3.log にリダイレクトして確認し、エラーがなければOKとします。"
+      - "【作業】app/src/services/logic_service.py を作成します。technical_specifications.md 『### 5. app/src/services/logic_service.py』を参照し、(1) ロジックサーバーのURLに birth, date をクエリパラメータとして付与 (具体URLは未定だが実装者が後で設定) し、(2) 取得したXMLを xml_parser.py に渡して結果を返す関数 fetch_and_parse_xml を定義します。"
+      - "【テスト】ロジックサーバー自体はまだ存在しないとして、ダミーのXMLファイルを用意して内部的に読み込む形でテストします。例: app/mock_data/mock_logic.xml を作成し、technical_specifications.md 『### 3. ロジックサーバー (XML) 取得例』の一部をコピペしておきます。\
+```xml\
+<?xml version=\"1.0\" encoding=\"Windows-31J\"?>\
+<uranai>\
+  <content>\
+    <explanation id='ghost'>4</explanation>\
+    <explanation id='text1'>menu[1]-id[9]-text1</explanation>\
+  </content>\
+</uranai>\
+```\
+logic_service.py 内部で requests.get ではなく一時的に open などでこのXMLファイルを読み込むように変更して動作テストを行います。"
+      - "【テストコマンド例】\
+```bash\
+python -c 'import app.src.services.logic_service as ls; print(ls.fetch_and_parse_xml(\"19990101\", \"20250109\"))' \
+```\
+実行結果を test_results_phase3.log に追記し、<explanation id='ghost'> や <explanation id='text1'> が抽出できているか確認します。NGの場合は修正→再テスト→OKなら次ステップ。"
+
+  - name: "フェーズ4: LLM呼び出し (llm_service) の下準備とテスト"
     steps:
-      - "【Step 4-1】AWS CDK のセットアップ  
-         - 参照箇所: 『技術要件定義書』 > 5, 14～17. cdk 関連  
-         - cdk/requirements.txt に記載のライブラリ (aws-cdk-lib 等) をインストール  
-           コマンド例: pip install -r cdk/requirements.txt  
-         - cdk.json (cdk/cdk.json) でアプリエントリーポイント (app) や context を確認"
-      - "【Step 4-2】AppRunnerStack (app_runner_stack.py) の確認  
-         - 参照箇所: 『技術要件定義書』 > 14. cdk/app_runner_stack.py  
-         - ECR リポジトリ作成 → App Runner サービス定義  
-         - ポート 8080, IAM ロール設定, 環境変数 (production.env / development.env) 対応など  
-         - LLM (AWS Bedrock) へのアクセスロールが必要な場合は付与"
-      - "【Step 4-3】PipelineStack (pipeline_stack.py) の確認  
-         - 参照箇所: 『技術要件定義書』 > 15. cdk/pipeline_stack.py  
-         - ソースステージ: GitHub 連携 (main ブランチ監視など)  
-         - ビルドステージ: Docker イメージビルド & ECR プッシュ  
-           - buildspec.yml 相当で docker build/push を定義  
-         - デプロイステージ: App Runner のイメージ更新  
-         - development.env, production.env 切り替えは CodeBuild or CDKContext などで制御"
-      - "【Step 4-4】CodePipeline 初回デプロイ  
-         - cdk bootstrap (必要に応じて)  
-         - cdk deploy PipelineStack (例)  
-         - 成功後、AWS コンソールの CodePipeline でパイプラインが作成されているか確認"
-      - "【Step 4-5】App Runner サービス確認  
-         - CodePipeline デプロイ完了後、AWS App Runner にてコンテナが起動しているか  
-         - App Runner の URL (xxxx.awsapprunner.com) にアクセスし、/fortune の疎通を確認  
-         - ログにエラーが出ていないか (LLM API キーやロジックサーバー URL が正しいか) チェック"
-      - "【Step 4-6】(test_phase4.md) CI/CD パイプライン上のテスト結果確認  
-         - パイプライン実行時に CodeBuild 上で pytest を実行する設定を入れている場合、buildログを確認  
-         - ここまでのユニットテスト・コンテナテスト・デプロイ後の簡易統合テスト結果を test_phase4.md に記録"
-  - name: "Phase 5: 機能追加・改善 (LLM 切り替え等) / 運用"
+      - "【technical_specifications.mdの参照】『### 4. app/src/services/llm_service.py』を確認します。AWS Bedrock やClaude3.5 Sonnetを想定するが、本実装では外部呼び出し部分は未定義でOK。モックとしてテキストファイルを読み込み→ダミーのJSONを返却する仕組みをまず整えます。"
+      - "【作業】app/src/services/llm_service.py を新規作成し、以下の関数を定義します。\
+(1) generate_fortune_items(...) : prompt/fortune_item_prompt.txt を読み込み、ダミーで6個のfortune_itemsリストを返す\
+(2) generate_answers(...) : ghost1_prompt.txt 等を参照し、ダミーで回答を返す\
+(3) generate_summary(...) : summary_prompt.txt を参照し、要約を返す\
+この時点では、LLMへの実際のリクエストは行わず、固定のJSONやランダム文字列を返却してください。"
+      - "【テストファイル作成】llm_service_test_command.sh を作り、以下のように実行します。\
+```bash\
+#!/bin/bash\
+python -c \"import app.src.services.llm_service as l; print(l.generate_fortune_items({'history':[]}))\" > test_results_phase4.log 2>&1\
+python -c \"import app.src.services.llm_service as l; print(l.generate_answers([{'ghost_id':1, 'fortune_items':'...'}]))\" >> test_results_phase4.log 2>&1\
+python -c \"import app.src.services.llm_service as l; print(l.generate_summary([{'ghost_id':1, 'answer':'外食がいいですよ'}]))\" >> test_results_phase4.log 2>&1\
+```\
+これにより3つの関数の呼び出し結果が test_results_phase4.log に書き込まれます。確認し、問題なければOK。"
+      - "【注意】『### 6. prompt ディレクトリ』に ghost1_prompt.txt などが存在しない場合は空ファイルを作成し、後で本番プロンプトを記述します。technical_specifications.md『### 11.～13.』を参照。"
+
+  - name: "フェーズ5: 占いロジック (fortune_service) 実装と1ファイルごとのテスト"
     steps:
-      - "【Step 5-1】LLM サービス抽象化  
-         - 参照箇所: 『技術要件定義書』 > 2. LLM 呼び出し (AWS Bedrock Claude3.5 Sonnet 想定)  
-         - openai_api_service.py など別実装ファイルを用意し、AWS Bedrock 以外にも差し替えられる構造を検討"
-      - "【Step 5-2】XML パースの例外処理・マルチ ghost 対応強化  
-         - 参照箇所: 『技術要件定義書』 > 3. ロジックサーバーとの連携 (XML 形式) & ghost と text1 の対応  
-         - ghost の数が 6 個に満たない / 超過する場合、エラーやリカバリーロジックを実装  
-         - text2, text3 などの要素が出るケースにも柔軟に対応"
-      - "【Step 5-3】モニタリング & ロギング強化  
-         - 参照箇所: 『技術要件定義書』 全般  
-         - CloudWatch Logs, X-Ray, App Runner のログ等を活用し、エラーを可視化  
-         - LLM 応答が想定外の場合の検知やリトライも考慮"
-      - "【Step 5-4】(test_phase5.md) 回帰テスト / 負荷テスト  
-         - 新機能追加後の回帰テスト、CI で自動化  
-         - アクセス負荷に対応できるか検証し、App Runner のオートスケーリング設定を見直す  
-         - test_phase5.md で結果まとめ"
-  - name: "Phase 6: 本番リリース & 継続的改善"
+      - "【technical_specifications.mdの参照】『### 3. app/src/services/fortune_service.py』に詳細なフローがあります。(2) 閲覧データから占い項目の生成 → (3) ロジックサーバーXML取得 → (4) 回答生成 → (5) 要約生成 → (6) レスポンス返却の流れ。"
+      - "【作業】app/src/services/fortune_service.py を新規作成し、以下の関数を定義:\
+(1) run_fortune_flow(fortune_request: dict) → List[dict]: 引数(例: {'birth':..., 'date':..., 'history':[...]})を受け取り、llm_serviceやlogic_serviceを順に呼び出す。\
+(2) 返り値は6要素のJSONリスト(ghost_id, summary, answer含む)とする。"
+      - "【テスト (ファイル作成直後)】\
+```bash\
+python -m py_compile app/src/services/fortune_service.py || echo \"Error in fortune_service.py\" \
+```\
+出力を test_results_phase5.log にリダイレクトし、エラーがないか確認。問題なければ次へ。"
+      - "【テスト (ロジック挙動確認)】\
+```bash\
+python -c 'import app.src.services.fortune_service as fs; \\
+req = {\"birth\":\"19990101\",\"date\":\"20250109\",\"history\":[{\"category\":\"X\",\"title\":\"Y\"}]}; \\
+print(fs.run_fortune_flow(req))' \
+```\
+結果を test_results_phase5.log に追記して確認します。ここで6個の回答+要約がダミーでも返ってくればOK。NGなら修正後に再テスト。"
+      - "【注意】ロジック内で llm_service, logic_service を呼び出す際、technical_specifications.md の『### 3. 処理フロー』を必ず参照し、(2)→(3)→(4)→(5)の順序を保ってください。"
+
+  - name: "フェーズ6: ルーター (fortune_router) 実装および POSTテスト"
     steps:
-      - "【Step 6-1】最終リリース判定  
-         - 参照箇所: 『技術要件定義書』 全内容  
-         - 要求仕様 (占いAPI, ghost, text1, 要約, JSONレスポンス 6個 etc.) が満たされているか検証  
-         - 実装漏れがないか、実装者逮捕のリスクがないかダブルチェック"
-      - "【Step 6-2】production.env の最終チェック  
-         - LLMアクセスキー, ロジックサーバーURL, 閲覧データサーバーURL, など本番用の値を設定  
-         - Secrets Manager / SSM パラメータストアで管理する場合は紐付けが正しいか確認"
-      - "【Step 6-3】本番環境へのデプロイ実施  
-         - GitHub main ブランチへの push をトリガーに CodePipeline → App Runner デプロイ  
-         - 正常稼働を確認し、APIテストやエンドユーザテストを実施"
-      - "【Step 6-4】運用監視 & 継続的改善  
-         - LLM モデル精度や ghost/text1 生成の品質向上などフィードバックを受けて更新  
-         - バージョンタグをつけてリリース管理  
-         - 定期的に依存パッケージ更新とセキュリティパッチ適用  
-         - さらに拡張する場合は、この開発計画を適宜改訂"
+      - "【technical_specifications.mdの参照】『### 2. app/src/routers/fortune_router.py』には、@router.post(\"/fortune\") で JSONを受け取るイメージが示されています。"
+      - "【作業】app/src/routers/fortune_router.py を作成し、FastAPIのAPIRouterを用いて /fortune を定義します。受け取ったリクエストを fortune_service.run_fortune_flow に渡し、その結果を return する形式とします。"
+      - "【テスト (構文チェック)】\
+```bash\
+python -m py_compile app/src/routers/fortune_router.py || echo \"Error in fortune_router.py\" \
+```\
+結果は test_results_phase6.log に追記します。"
+      - "【テスト (APIエンドポイント起動)】 main.py がまだ未定義の場合は仮で app/src/main.py を作成し、FastAPIインスタンスに fortune_router を include するだけのコードを書きます (technical_specifications.md『### 1. app/src/main.py』参照)。\
+```bash\
+touch app/src/main.py\
+echo \"from fastapi import FastAPI\\nfrom app.src.routers.fortune_router import router\\napp = FastAPI()\\napp.include_router(router)\\n\" > app/src/main.py\
+```"
+      - "【テスト (サーバー起動)】\
+```bash\
+python -c 'import uvicorn; uvicorn.run(\"app.src.main:app\", host=\"0.0.0.0\", port=8080)' &
+sleep 2
+```\
+バックグラウンドでサーバー起動後、先のフェーズ2で作成した test_request_command.sh を実行し、\
+```bash\
+./test_request_command.sh >> test_results_phase6.log 2>&1\
+```\
+レスポンスが 6要素の占い回答+要約のJSONで返ってくるか確認します。NGなら修正。OKなら次へ。"
+
+  - name: "フェーズ7: Dockerfile の実装とコンテナ起動テスト"
+    steps:
+      - "【technical_specifications.mdの参照】『### 18. Dockerfile』に書かれている手順を確認します。python:3.11ベース→requirements.txtインストール→ソースコードコピー→uvicorn起動が概要です。"
+      - "【作業】リポジトリ直下に Dockerfile を作成し、technical_specifications.md『### 18. Dockerfile』通りに記述します。requirements.txt は technical_specifications.md『### 19. requirements.txt』のライブラリを事前にコピーします。"
+      - "【テスト】以下コマンドでDockerイメージをビルド、コンテナ起動し、ローカルでcurlテストします。\
+```bash\
+docker build -t fortune-api:local . >> test_results_phase7.log 2>&1 || echo \"Docker build error\"\
+docker run -d -p 8080:8080 --name fortune-api-local fortune-api:local >> test_results_phase7.log 2>&1\
+sleep 3\
+curl -X POST -H \"Content-Type: application/json\" -d @app/mock_data/test_request.json http://localhost:8080/fortune >> test_results_phase7.log 2>&1\
+```\
+test_results_phase7.log を確認し、想定のJSONが返ればOK。"
+      - "【後処理】テスト終了後、\
+```bash\
+docker stop fortune-api-local && docker rm fortune-api-local\
+```\
+でコンテナを停止・削除します。"
+
+  - name: "フェーズ8: AWS CDK (app_runner_stack, pipeline_stack) 実装と最終統合テスト"
+    steps:
+      - "【technical_specifications.mdの参照】『### 14. cdk/app_runner_stack.py』, 『### 15. cdk/pipeline_stack.py』の手順が詳しいです。ECRリポジトリ作成→App Runnerサービス作成→CodePipeline構築→GitHub連携→ビルド→デプロイの順序が書かれています。"
+      - "【作業】cdk/app_runner_stack.py を作成し、technical_specifications.md『### 14.』を参考にECRとApp Runnerを定義します。ポート8080で起動することを忘れないでください。"
+      - "【テスト】Shellで CDK コマンドを使用してデプロイ前の合成 (synth) を行い、エラーがないか確認します。\
+```bash\
+cd cdk\
+cdk synth > ../test_results_phase8.log 2>&1 || echo \"CDK synth error\"\
+cd ..
+```\
+結果は test_results_phase8.log を確認。"
+      - "【作業】cdk/pipeline_stack.py を作成し、technical_specifications.md『### 15.』を参考に CodePipeline のソースステージ、ビルドステージ、デプロイステージを記述します。development.env / production.env 切り替えも検討します。"
+      - "【テスト (synth 再実行)】\
+```bash\
+cd cdk\
+cdk synth >> ../test_results_phase8.log 2>&1\
+```\
+OKなら次へ。"
+      - "【テスト (デプロイ)】 AWS環境が利用できる前提で\
+```bash\
+cdk deploy AppRunnerStack >> ../test_results_phase8.log 2>&1\
+cdk deploy PipelineStack >> ../test_results_phase8.log 2>&1\
+```\
+を実行し、CloudFormation が正常に完了するか test_results_phase8.log にて確認します。NGの場合は修正→再テスト。"
+      - "【本番テスト】CodePipelineをトリガーしてDockerビルド→ECRプッシュ→App Runner更新デプロイが成功し、実際にhttpエンドポイントで /fortune が動作するか確認します。curlコマンドまたはtest_request_command.shを活用し結果を test_results_phase8.log に記録。"
+
+  - name: "フェーズ9: 運用開始と保守方針"
+    steps:
+      - "【technical_specifications.mdの参照】最終的な出力形式や占い項目・回答の整合性を確認してください。『## デプロイのための IaC』にあるように環境を分割(development, production)する運用を想定します。"
+      - "【作業】AWS App Runner で常時稼働が確認できたら、本番運用を開始します。ロジックサーバーXMLや LLMの実API接続部分 (AWS Bedrock等) を徐々に差し替えて、本番相当の動作に移行します。"
+      - "【保守テスト方針】1ファイルや1機能を改修するたびに再度シェルコマンドで構文チェック→簡易curlテスト→結果を test_results_phaseX.log に記録し、合格後にプッシュ。NG時は修正後に再試行することで最小のテストで最大効率を図ります。"
+      - "【注意】technical_specifications.md の指示通りに実装しないと逮捕される可能性があるため、保守時も常に同ドキュメントを参照して変更差分を管理してください。"
