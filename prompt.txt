@@ -1,0 +1,156 @@
+あなたのタスクは技術要件定義書をmdファイルで作成することです。適切な粒度でmdファイルを作成してください。（長すぎたりディスカッションがしにくいのはダメ）
+ディレクトリ構成、ファイル名、ファイルの役割と処理、ファイルの依存関係の情報は必須です
+出力はデータ形式以外はコードを書かずに自然言語で記述してください
+特にロジックは正確に実装できるように詳細に記述してください
+デプロイのためのIaCも必須です
+これだけを見て実装するので情報を正確かつ詳細に書いて絶対に省略せずにトークンの限界まで出力すること。実装できない場合は実装者が逮捕されます。
+
+
+#目的
+AWSのApp runnerでAPIサーバーの作成
+
+#技術スタック
+python3.11 
+fastAPI
+docker
+CI/CD : AWS CodePipeline/App Runner
+AWS CDK(python)
+(要件見て必要そうであれば追加して)
+
+#処理概要
+1. 閲覧データサーバーからから閲覧データを受け取る
+2. 閲覧データからLLM(どれ使うかは選択したい)を使って占い項目6個(id=1,2,3,4,5,6)を作成
+json形式
+```
+[
+  {
+    "id": 1,
+    "fortune_items": "恋の秘訣",
+  },
+  {
+    "id": 2,
+    "fortune_items": "運気が上がる秘訣",
+  },
+  ...(6個)
+]
+```
+
+3. ロジック結果データから<explanation id = 'ghost'>と<explanation id = 'text1'>を利用して占い項目それぞれに対してLLMで(どれ使うかは選択したい)回答をjsonで作成
+（例1）ロジック結果データの<explanation id = 'ghost'>が1,1,2,2,4,4の時にユニークな数字が3個なので占い項目id=1,2はghost1がtext1(1が2個なのでtext1も2個ある)を使って回答、占い項目id=3,4はghost2がtext1(2が2個なのでtext1も2個ある)を使って回答、占い項目id=5,6はghost4がtext1を使って回答(4が2個なのでtext1も2個ある)
+（例2）ロジック結果データの<explanation id = 'ghost'>が1,3,3,3の時にユニークな数字が2個なので占い項目id=1,2,3はghost1がtext1(1が1個なのでtext1は一個)を使って回答、占い項目id=4,5,6はghost3がtext1(3が3個なのでtext1も3個ある)を使って回答
+json形式は
+```
+[
+  {
+    "ghost_id": 1,
+    "fortune_items": "恋の秘訣",
+    "answer": "外食がいいですよ"
+  },
+  {
+    "ghost_id": 1,
+    "fortune_items": "運気が上がる秘訣",
+    "answer": "お金を使うと運気が上がりますよ"
+  },
+  ...(6個)
+]
+```
+4. 3の出力のjsonのそれぞれのanswerに対してLLMで要約を作成してjsonで出力（これをAPIのレスポンスとして返す）
+json形式
+```
+[
+  {
+    "ghost_id": 1,
+    "summary": "外食にすべし",
+    "answer": "外食がいいですよ"
+  },
+  {
+    "ghost_id": 1,
+    "summary": "お金を使おう",
+    "answer": "お金を使うと運気が上がりますよ"
+  },
+  ...(6個)
+]
+```
+
+ロジックサーバーからロジック結果データをxml形式でとってくる
+閲覧データサーバーからから閲覧データをjson形式でとってくる
+
+ロジック結果データの例はこんな感じの形式
+```
+<?xml version="1.0" encoding="Windows-31J" ?>
+<uranai>
+<title>【ギャル霊媒師◆飯塚唯】AI守護霊メッセージ</title>
+<reader>gal</reader>
+<admin>ZAPPALLAS</admin>
+<version>1.0</version>
+<link>http://www.zappallas.com/</link>
+<content>
+<title>0</title>
+<explanation id = 'num'>3</explanation>
+</content>
+<content>
+<title>1</title>
+<explanation id = 'menu'>2002</explanation>
+<explanation id = 'id'>13</explanation>
+<explanation id = 'text1'>頭をいっぱい使える人なんだね。&lt;CTAG mode="user" type="name"&gt;の頭の中に、超高性能のコンピュータがある感じがするんだ。いつもガチで稼動してて、絶対壊れないコンピュータだね。たとえば、キレイな紅葉とか見るコトってあるでしょ？そういうとき、｢きれいだな｣って思うだけじゃ、終らないと思うんだ。樹齢がどれくらいとか、どうしてこの色に紅葉するのかとか、そういうコトも考えているんじゃない？それくらい、頭の中をいつだって冷静にできるんだよね。だから、ショックなコトなんかがあったときでも、けっこう落ち着いて受け止めてたりするはず。自分とか状況を、客観的に分析したりできちゃうんだよ。人生に無駄がない、遠回りするコトが少ないんだって、胸を張ってね。</explanation>
+</content>
+<content>
+<title>26.守護霊ID[4]x運気ID[9](N:金星/T:火星/180度)</title>
+<explanation id = 'menu'>1</explanation>
+<explanation id = 'id'>9</explanation>
+<explanation id = 'text1'>menu[1]-id[9]-text1</explanation>
+<explanation id = 'text2'>menu[1]-id[9]-text2</explanation>
+<explanation id = 'text3'>menu[1]-id[9]-text3</explanation>
+<explanation id = 'ghost'>4</explanation>
+<explanation id = 'sdate'>20241226</explanation>
+<explanation id = 'edate'>20250215</explanation>
+<explanation id = 'angle'>180.0</explanation>
+</content>
+<content>
+<title>28.守護霊ID[4]x運気ID[10](N:金星/T:金星/60度)</title>
+<explanation id = 'menu'>1</explanation>
+<explanation id = 'id'>10</explanation>
+<explanation id = 'text1'>menu[1]-id[10]-text1</explanation>
+<explanation id = 'text2'>menu[1]-id[10]-text2</explanation>
+<explanation id = 'text3'>menu[1]-id[10]-text3</explanation>
+<explanation id = 'ghost'>4</explanation>
+<explanation id = 'sdate'>20250120</explanation>
+<explanation id = 'edate'>20250209</explanation>
+<explanation id = 'angle'>60.0</explanation>
+</content>
+<content>
+<title>31.守護霊ID[4]x運気ID[11](N:太陽/T:金星/60度)</title>
+<explanation id = 'menu'>1</explanation>
+<explanation id = 'id'>11</explanation>
+<explanation id = 'text1'>menu[1]-id[11]-text1</explanation>
+<explanation id = 'text2'>menu[1]-id[11]-text2</explanation>
+<explanation id = 'text3'>menu[1]-id[11]-text3</explanation>
+<explanation id = 'ghost'>4</explanation>
+<explanation id = 'sdate'>20250105</explanation>
+<explanation id = 'edate'>20250121</explanation>
+<explanation id = 'angle'>60.0</explanation>
+</content>
+<result>2000</result>
+</uranai>```
+
+閲覧データの例は
+```
+[
+  {
+    "category": "誕生日が分からないあの人との恋",
+    "title": "友達だけど、少しでも異性を意識してくれてる？"
+  },
+  {
+    "category": "人間関係について",
+    "title": "あの人は「都合のいい女」だって思ってる？"
+  },
+  {
+    "category": "あの人の本音",
+    "title": "あの人が「この人は大切にしなきゃ」って想う人"
+  }
+]
+```
+
+
+変数名とかは適当に決めて
+抜けているところ曖昧な場所はは出力を見て修正するので必ず適切な位置で指摘して
