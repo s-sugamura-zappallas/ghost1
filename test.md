@@ -1,4 +1,3 @@
-```md
 # 技術要件定義書
 
 本書では AWS App Runner を用いた API サーバー構築のための要件定義・ディレクトリ構成・ファイル構成と役割・依存関係・デプロイ用 IaC（AWS CodePipeline/App Runner を想定）を **一切省略せず** に記載します。  
@@ -37,151 +36,144 @@
 ## 3. 処理概要
 
 1. **閲覧データサーバー**から JSON 形式のデータを受け取る  
-   - 例:
-     ```json
-     [
-       {
-         "category": "Books",
-         "title": "The Great Gatsby"
-       },
-       {
-         "category": "Movies",
-         "title": "Inception"
-       },
-       {
-         "category": "Music",
-         "title": "Bohemian Rhapsody"
-       },
-       {
-         "category": "Technology",
-         "title": "Introduction to AI"
-       }
-     ]
-     ```
+   例:
+   ```json
+   [
+     {
+       "category": "Books",
+       "title": "The Great Gatsby"
+     },
+     {
+       "category": "Movies",
+       "title": "Inception"
+     },
+     {
+       "category": "Music",
+       "title": "Bohemian Rhapsody"
+     },
+     {
+       "category": "Technology",
+       "title": "Introduction to AI"
+     }
+   ]
+   ```
 
 2. **ロジックサーバー**から XML 形式のデータを取得し解析する  
-   - 例:
-     ```xml
-     <?xml version="1.0" encoding="Windows-31J" ?>
-     <uranai>
-       <title>【ギャル霊媒師◆飯塚唯】AI守護霊メッセージ</title>
-       <reader>gal</reader>
-       <admin>ZAPPALLAS</admin>
-       <version>1.0</version>
-       <link>http://www.zappallas.com/</link>
-       <content>
-         <title>0</title>
-         <explanation id = 'num'>3</explanation>
-       </content>
-       <content>
-         <title>1</title>
-         <explanation id = 'menu'>2002</explanation>
-         <explanation id = 'id'>13</explanation>
-         <explanation id = 'text1'>
-           頭をいっぱい使える人なんだね。&lt;CTAG mode="user" type="name"&gt;の頭の中に、超高性能のコンピュータがある感じがするんだ。
-           ...
-         </explanation>
-       </content>
-       <content>
-         <title>26.守護霊ID[4]x運気ID[9](N:金星/T:火星/180度)</title>
-         <explanation id = 'menu'>1</explanation>
-         <explanation id = 'id'>9</explanation>
-         <explanation id = 'text1'>menu[1]-id[9]-text1</explanation>
-         <explanation id = 'text2'>menu[1]-id[9]-text2</explanation>
-         <explanation id = 'text3'>menu[1]-id[9]-text3</explanation>
-         <explanation id = 'ghost'>4</explanation>
-         <explanation id = 'sdate'>20241226</explanation>
-         <explanation id = 'edate'>20250215</explanation>
-         <explanation id = 'angle'>180.0</explanation>
-       </content>
-       <content>
-         <title>28.守護霊ID[4]x運気ID[10](N:金星/T:金星/60度)</title>
-         <explanation id = 'menu'>1</explanation>
-         <explanation id = 'id'>10</explanation>
-         <explanation id = 'text1'>menu[1]-id[10]-text1</explanation>
-         <explanation id = 'text2'>menu[1]-id[10]-text2</explanation>
-         <explanation id = 'text3'>menu[1]-id[10]-text3</explanation>
-         <explanation id = 'ghost'>4</explanation>
-         <explanation id = 'sdate'>20250120</explanation>
-         <explanation id = 'edate'>20250209</explanation>
-         <explanation id = 'angle'>60.0</explanation>
-       </content>
-       <content>
-         <title>31.守護霊ID[4]x運気ID[11](N:太陽/T:金星/60度)</title>
-         <explanation id = 'menu'>1</explanation>
-         <explanation id = 'id'>11</explanation>
-         <explanation id = 'text1'>menu[1]-id[11]-text1</explanation>
-         <explanation id = 'text2'>menu[1]-id[11]-text2</explanation>
-         <explanation id = 'text3'>menu[1]-id[11]-text3</explanation>
-         <explanation id = 'ghost'>4</explanation>
-         <explanation id = 'sdate'>20250105</explanation>
-         <explanation id = 'edate'>20250121</explanation>
-         <explanation id = 'angle'>60.0</explanation>
-       </content>
-       <result>2000</result>
-     </uranai>
-     ```
+   例:
+   ```xml
+   <?xml version="1.0" encoding="Windows-31J" ?>
+   <uranai>
+     <title>【ギャル霊媒師◆飯塚唯】AI守護霊メッセージ</title>
+     <reader>gal</reader>
+     <admin>ZAPPALLAS</admin>
+     <version>1.0</version>
+     <link>http://www.zappallas.com/</link>
+     <content>
+       <title>0</title>
+       <explanation id = 'num'>3</explanation>
+     </content>
+     <content>
+       <title>1</title>
+       <explanation id = 'menu'>2002</explanation>
+       <explanation id = 'id'>13</explanation>
+       <explanation id = 'text1'>
+         頭をいっぱい使える人なんだね。&lt;CTAG mode="user" type="name"&gt;の頭の中に、超高性能のコンピュータがある感じがするんだ。
+         ...
+       </explanation>
+     </content>
+     <content>
+       <title>26.守護霊ID[4]x運気ID[9](N:金星/T:火星/180度)</title>
+       <explanation id = 'menu'>1</explanation>
+       <explanation id = 'id'>9</explanation>
+       <explanation id = 'text1'>menu[1]-id[9]-text1</explanation>
+       <explanation id = 'text2'>menu[1]-id[9]-text2</explanation>
+       <explanation id = 'text3'>menu[1]-id[9]-text3</explanation>
+       <explanation id = 'ghost'>4</explanation>
+       <explanation id = 'sdate'>20241226</explanation>
+       <explanation id = 'edate'>20250215</explanation>
+       <explanation id = 'angle'>180.0</explanation>
+     </content>
+     <content>
+       <title>28.守護霊ID[4]x運気ID[10](N:金星/T:金星/60度)</title>
+       <explanation id = 'menu'>1</explanation>
+       <explanation id = 'id'>10</explanation>
+       <explanation id = 'text1'>menu[1]-id[10]-text1</explanation>
+       <explanation id = 'text2'>menu[1]-id[10]-text2</explanation>
+       <explanation id = 'text3'>menu[1]-id[10]-text3</explanation>
+       <explanation id = 'ghost'>4</explanation>
+       <explanation id = 'sdate'>20250120</explanation>
+       <explanation id = 'edate'>20250209</explanation>
+       <explanation id = 'angle'>60.0</explanation>
+     </content>
+     <content>
+       <title>31.守護霊ID[4]x運気ID[11](N:太陽/T:金星/60度)</title>
+       <explanation id = 'menu'>1</explanation>
+       <explanation id = 'id'>11</explanation>
+       <explanation id = 'text1'>menu[1]-id[11]-text1</explanation>
+       <explanation id = 'text2'>menu[1]-id[11]-text2</explanation>
+       <explanation id = 'text3'>menu[1]-id[11]-text3</explanation>
+       <explanation id = 'ghost'>4</explanation>
+       <explanation id = 'sdate'>20250105</explanation>
+       <explanation id = 'edate'>20250121</explanation>
+       <explanation id = 'angle'>60.0</explanation>
+     </content>
+     <result>2000</result>
+   </uranai>
+   ```
 
 3. **占い項目 6 個 (id=1,2,3,4,5,6) の回答を生成**  
-   - `ghost` ID と `<explanation id='text1'>` 等を組み合わせ、LLM で回答を作成。  
-   - 例1 では `<explanation id='ghost'>` の値が `[1,1,2,2,4,4]` の場合  
-     - ユニークな数字は `[1, 2, 4]` → ユニークな `ghost` として `ghost1`, `ghost2`, `ghost4` となる
-     - それぞれに対応する占い項目 (id=1,2) / (id=3,4) / (id=5,6) で回答を生成
-   - 例2 では `<explanation id='ghost'>` の値が `[1,3,3,3]` の場合  
-     - ユニークな数字は `[1, 3]` → `ghost1`, `ghost3`
-     - それぞれ (id=1,2,3) / (id=4,5,6) で回答を生成
-   - 出力フォーマット例:
-     ```json
-     [
-       {
-         "ghost_id": 1,
-         "fortune_items": "Love",
-         "answer": "You will find unexpected moments of romance in the near future."
-       },
-       {
-         "ghost_id": 2,
-         "fortune_items": "Career",
-         "answer": "A new opportunity will come your way, bringing growth and challenges."
-       },
-       {
-         "ghost_id": 3,
-         "fortune_items": "Health",
-         "answer": "Maintaining balance and rest will lead to an improvement in your well-being."
-       },
-       {
-         "ghost_id": 4,
-         "fortune_items": "Finance",
-         "answer": "Careful planning will help you secure a stable financial situation."
-       }
-     ]
-     ```
+   出力フォーマット例:
+   ```json
+   [
+     {
+       "ghost_id": 1,
+       "fortune_items": "Love",
+       "answer": "You will find unexpected moments of romance in the near future."
+     },
+     {
+       "ghost_id": 2,
+       "fortune_items": "Career",
+       "answer": "A new opportunity will come your way, bringing growth and challenges."
+     },
+     {
+       "ghost_id": 3,
+       "fortune_items": "Health",
+       "answer": "Maintaining balance and rest will lead to an improvement in your well-being."
+     },
+     {
+       "ghost_id": 4,
+       "fortune_items": "Finance",
+       "answer": "Careful planning will help you secure a stable financial situation."
+     }
+   ]
+   ```
 
 4. **上記 JSON の `answer` に対して再度 LLM で要約を作成し、JSON で出力**  
-   - 出力フォーマット例:
-     ```json
-     [
-       {
-         "ghost_id": 1,
-         "summary": "Love",
-         "answer": "You will find unexpected moments of romance in the near future."
-       },
-       {
-         "ghost_id": 2,
-         "summary": "Career",
-         "answer": "A new opportunity will come your way, bringing growth and challenges."
-       },
-       {
-         "ghost_id": 3,
-         "summary": "Health",
-         "answer": "Maintaining balance and rest will lead to an improvement in your well-being."
-       },
-       {
-         "ghost_id": 4,
-         "summary": "Finance",
-         "answer": "Careful planning will help you secure a stable financial situation."
-       }
-     ]
-     ```
+   出力フォーマット例:
+   ```json
+   [
+     {
+       "ghost_id": 1,
+       "summary": "Love",
+       "answer": "You will find unexpected moments of romance in the near future."
+     },
+     {
+       "ghost_id": 2,
+       "summary": "Career",
+       "answer": "A new opportunity will come your way, bringing growth and challenges."
+     },
+     {
+       "ghost_id": 3,
+       "summary": "Health",
+       "answer": "Maintaining balance and rest will lead to an improvement in your well-being."
+     },
+     {
+       "ghost_id": 4,
+       "summary": "Finance",
+       "answer": "Careful planning will help you secure a stable financial situation."
+     }
+   ]
+   ```
 
 - 上記手順全体の流れ（サーバー起動時の API フロー例）:
   1. Client から POST/GET リクエスト → API で処理開始
@@ -487,7 +479,7 @@
 ## 6. ファイルの依存関係
 
 ```mermaid
-flowchart TB
+graph TB
     A[main.py] --> B[logic_parser.py]
     A[main.py] --> C[browsing_parser.py]
     A[main.py] --> D[llm_interface.py]
