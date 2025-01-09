@@ -228,7 +228,7 @@
 │   ├── codepipeline_app_runner.yaml  # CodePipelineやApp Runnerのリソース定義 (CloudFormation例)
 │   └── (または Terraform, CDKなど別ファイル群)
 └── .gitignore
-```
+
 
 > **適切な位置での指摘**:  
 > - IaC には CloudFormation, Terraform, AWS CDK 等好きな方法を選択可。  
