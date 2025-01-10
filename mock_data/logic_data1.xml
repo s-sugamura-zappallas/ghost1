@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="Windows-31J" ?>
+<uranai>
+    <title>【ギャル霊媒師◆飯塚唯】AI守護霊メッセージ</title>
+    <reader>gal</reader>
+    <admin>ZAPPALLAS</admin>
+    <version>1.0</version>
+    <link>http://www.zappallas.com/</link>
+
+    <content>
+        <title>0</title>
+        <explanation id='num'>3</explanation>
+    </content>
+    <content>
+        <title>1</title>
+        <explanation id='menu'>2002</explanation>
+        <explanation id='id'>13</explanation>
+        <explanation id='text1'>
+            いろんなコト、深く考えてるんだね。ガンガン思いつきで進んでいくってコトはないんじゃない？そんな冒険、できないししたくないって考えてるかもしれないね。
+            だから、ちょっとゆったりペースなイメージが視えてくるんだよね。でもね、それって、全然まどろっこしい雰囲気じゃないんだ。
+            着実にいろんなことを進めていけるから、安心して視ていられる感じだよ。それに、何かに関われば、とことんガチで頑張れるからね。
+            いつの間にか、周りも驚くような結果を出しちゃってることもあると思うんだ。だから、自分のペースをどこまでも大切にしていいんだよ。
+            迷うときにもガッツリ迷いきれば、ガーッと信じて進める道を見つけるコトができちゃうのが、あなたなんだよ。
+        </explanation>
+    </content>
+    
+    <!-- 1つ目のデータ -->
+    <content>
+        <!-- title の連番は例として 26 からスタート -->
+        <title>26.守護霊ID[3]x運気ID[1](N:金星/T:火星/180度)</title>
+        <explanation id='menu'>1</explanation>
+        <explanation id='id'>1</explanation>
+        <explanation id='text1'>幸運期。多忙。チャンスが多い。健康に注意。新しいもの、少し高い目標に挑戦して。頑張りが実を結ぶ。動くべき時。立ち止まらない。</explanation>
+        <explanation id='ghost'>3</explanation>
+        <explanation id='sdate'>20241110</explanation>
+        <explanation id='edate'>20250422</explanation>
+        <explanation id='angle'>180.0</explanation>
+    </content>
+
+    <!-- 2つ目のデータ -->
+    <content>
+        <title>27.守護霊ID[5]x運気ID[2](N:金星/T:火星/180度)</title>
+        <explanation id='menu'>1</explanation>
+        <explanation id='id'>2</explanation>
+        <explanation id='text1'>調子が良くない。物事がスムーズにいかない。小さなトラブルが起きやすい。寛容に構えて。決断に注意。少し休む。リフレッシュ。</explanation>
+        <explanation id='ghost'>5</explanation>
+        <explanation id='sdate'>20241210</explanation>
+        <explanation id='edate'>20241211</explanation>
+        <explanation id='angle'>180.0</explanation>
+    </content>
+
+    <!-- 3つ目のデータ -->
+    <content>
+        <title>28.守護霊ID[5]x運気ID[3](N:金星/T:火星/180度)</title>
+        <explanation id='menu'>1</explanation>
+        <explanation id='id'>3</explanation>
+        <explanation id='text1'>調子が良くない。物事がスムーズにいかない。小さなトラブルが起きやすい。寛容に構えて。決断に注意。少し休む。リフレッシュ。</explanation>
+        <explanation id='ghost'>5</explanation>
+        <explanation id='sdate'>20241119</explanation>
+        <explanation id='edate'>20241120</explanation>
+        <explanation id='angle'>180.0</explanation>
+    </content>
+
+    <!-- 4つ目のデータ -->
+    <content>
+        <title>29.守護霊ID[5]x運気ID[4](N:金星/T:火星/180度)</title>
+        <explanation id='menu'>1</explanation>
+        <explanation id='id'>4</explanation>
+        <explanation id='text1'>調子が良くない。物事がスムーズにいかない。小さなトラブルが起きやすい。寛容に構えて。決断に注意。少し休む。リフレッシュ。</explanation>
+        <explanation id='ghost'>5</explanation>
+        <explanation id='sdate'>20241126</explanation>
+        <explanation id='edate'>20241127</explanation>
+        <explanation id='angle'>180.0</explanation>
+    </content>
+
+    <!-- 5つ目のデータ -->
+    <content>
+        <title>30.守護霊ID[5]x運気ID[5](N:金星/T:火星/180度)</title>
+        <explanation id='menu'>1</explanation>
+        <explanation id='id'>5</explanation>
+        <explanation id='text1'>調子が良い。物事がスムーズにいきやすい。小さな成功・達成。進むと良い。無理しすぎない。後回しにしていたものに手を付ける</explanation>
+        <explanation id='ghost'>5</explanation>
+        <explanation id='sdate'>20241116</explanation>
+        <explanation id='edate'>20241118</explanation>
+        <explanation id='angle'>180.0</explanation>
+    </content>
+
+    <!-- 6つ目のデータ -->
+    <content>
+        <title>31.守護霊ID[5]x運気ID[6](N:金星/T:火星/180度)</title>
+        <explanation id='menu'>1</explanation>
+        <explanation id='id'>6</explanation>
+        <explanation id='text1'>調子が良い。物事がスムーズにいきやすい。小さな成功・達成。進むと良い。無理しすぎない。後回しにしていたものに手を付ける</explanation>
+        <explanation id='ghost'>5</explanation>
+        <explanation id='sdate'>20241121</explanation>
+        <explanation id='edate'>20241122</explanation>
+        <explanation id='angle'>180.0</explanation>
+    </content>
+
+    <result>2000</result>
+</uranai>

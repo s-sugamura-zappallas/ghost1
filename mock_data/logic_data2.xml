@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="Windows-31J" ?>
+<uranai>
+    <title>【ギャル霊媒師◆飯塚唯】AI守護霊メッセージ</title>
+    <reader>gal</reader>
+    <admin>ZAPPALLAS</admin>
+    <version>1.0</version>
+    <link>http://www.zappallas.com/</link>
+
+    <!-- ここまではヘッダー部（変更不要） -->
+    <content>
+        <title>0</title>
+        <explanation id='num'>3</explanation>
+    </content>
+    <content>
+        <title>1</title>
+        <explanation id='menu'>2002</explanation>
+        <explanation id='id'>13</explanation>
+        <explanation id='text1'>
+            巣穴から恐る恐る顔を出してる、子どものウサギみたいな雰囲気だね。
+            自信を持って堂々としているとか、ガンガン自分を主張するとか、ちょっと遠い世界のコトみたいに感じるんじゃない？それくらい、怖がり屋さんみたいなんだ。
+            ｢失敗するかも｣｢どうしていいのか分からない｣って思うことも、多いんじゃないかな？でもね、それって桃さんが弱いってコトじゃないんだよ。
+            いろんなコトを考えて、ちょっとしたコトを気にするからこそ、あったかい優しさを持ってるんだ。
+            だから、誰かのことを手助けしたいとか、話を聞いてあげたいって思うコトも、たくさんあると思うんだよね。
+            そういうときは、がっつり人のためになるつもりで、自分から声をかけていいんだよ。あなたなら、その人の心を包み込めると思うな
+        </explanation>
+    </content>
+
+    <!-- 以下、データ部分を差し替え -->
+
+    <!-- 1つ目のデータ -->
+    <content>
+        <title>26.守護霊ID[1]x運気ID[2](N:金星/T:火星/180度)</title>
+        <explanation id='menu'>1</explanation>
+        <explanation id='id'>2</explanation>
+        <explanation id='text1'>
+            自己主張が強くなり、行動的になる時期。周囲から重要な人物だと思われたいという願望。社会生活における自分自身の役割の再確認。
+            新しい計画に着手するといい。周囲の援助が得られる
+        </explanation>
+        <explanation id='ghost'>1</explanation>
+        <explanation id='sdate'>20241122</explanation>
+        <explanation id='edate'>20241220</explanation>
+        <explanation id='angle'>180.0</explanation>
+    </content>
+
+    <!-- 2つ目のデータ -->
+    <content>
+        <title>27.守護霊ID[1]x運気ID[2](N:金星/T:火星/180度)</title>
+        <explanation id='menu'>1</explanation>
+        <explanation id='id'>2</explanation>
+        <explanation id='text1'>
+            自分の考えと他者の意見が合わない。すれ違い。不得意な方に逃げてしまう。
+            得意に根気よく向き合って
+        </explanation>
+        <explanation id='ghost'>1</explanation>
+        <explanation id='sdate'>20241103</explanation>
+        <explanation id='edate'>20241108</explanation>
+        <explanation id='angle'>180.0</explanation>
+    </content>
+
+    <!-- 3つ目のデータ -->
+    <content>
+        <title>28.守護霊ID[2]x運気ID[2](N:金星/T:火星/180度)</title>
+        <explanation id='menu'>1</explanation>
+        <explanation id='id'>2</explanation>
+        <explanation id='text1'>
+            人生の理想を根底から覆すようなことがありそう。今までそうだと思ってたものが全然違ったとか、
+            当たり前にあった価値観が崩れ去るようなことも。いずれにしろ新しい理想、再構築を心掛けて
+        </explanation>
+        <explanation id='ghost'>2</explanation>
+        <explanation id='sdate'>20241120</explanation>
+        <explanation id='edate'>20440119</explanation>
+        <explanation id='angle'>180.0</explanation>
+    </content>
+
+    <!-- 4つ目のデータ -->
+    <content>
+        <title>29.守護霊ID[3]x運気ID[2](N:金星/T:火星/180度)</title>
+        <explanation id='menu'>1</explanation>
+        <explanation id='id'>2</explanation>
+        <explanation id='text1'>
+            高い目標を達成できる。忙しい。人生の転機。チャンスがたくさん舞い込む。人生の展望。
+            この時期に取り組んだものが今後数年間のテーマになって広がっていく。健康注意。
+        </explanation>
+        <explanation id='ghost'>3</explanation>
+        <explanation id='sdate'>20240526</explanation>
+        <explanation id='edate'>20250610</explanation>
+        <explanation id='angle'>180.0</explanation>
+    </content>
+
+    <!-- 5つ目のデータ -->
+    <content>
+        <title>30.守護霊ID[4]x運気ID[2](N:金星/T:火星/180度)</title>
+        <explanation id='menu'>1</explanation>
+        <explanation id='id'>2</explanation>
+        <explanation id='text1'>
+            素直になれない。自分の気持ちを認められず、あまのじゃくな態度。自信がないから、強い態度に出てしまう。
+            望んでもいないことを受け入れてしまう可能性。勇気をもって素直になって
+        </explanation>
+        <explanation id='ghost'>4</explanation>
+        <explanation id='sdate'>20241018</explanation>
+        <explanation id='edate'>20241111</explanation>
+        <explanation id='angle'>180.0</explanation>
+    </content>
+
+    <!-- 6つ目のデータ -->
+    <content>
+        <title>31.守護霊ID[4]x運気ID[5](N:金星/T:火星/180度)</title>
+        <explanation id='menu'>1</explanation>
+        <explanation id='id'>5</explanation>
+        <explanation id='text1'>
+            良くも悪くも恋愛や趣味にスポットがあたる。恋の主役になる。悪い男も引き寄せる。
+            自分の恋の理想、こだわりが強くなりすぎてしまう危険。
+        </explanation>
+        <explanation id='ghost'>4</explanation>
+        <explanation id='sdate'>20241018</explanation>
+        <explanation id='edate'>20241111</explanation>
+        <explanation id='angle'>180.0</explanation>
+    </content>
+
+    <!-- 7つ目のデータ -->
+    <content>
+        <title>32.守護霊ID[4]x運気ID[6](N:金星/T:火星/180度)</title>
+        <explanation id='menu'>1</explanation>
+        <explanation id='id'>6</explanation>
+        <explanation id='text1'>
+            恋愛におけるモチベーションが高まる。焦って行動してトラブルを呼び込みやすい。
+            その場の雰囲気に流されやすい。警戒心が低くなりがち。魅力が光る時。一時的な関係になりがち。
+        </explanation>
+        <explanation id='ghost'>4</explanation>
+        <explanation id='sdate'>20241018</explanation>
+        <explanation id='edate'>20241111</explanation>
+        <explanation id='angle'>180.0</explanation>
+    </content>
+
+    <!-- フッター部 -->
+    <result>2000</result>
+</uranai>
